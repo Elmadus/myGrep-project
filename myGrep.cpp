@@ -5,8 +5,10 @@
 
 using namespace std;
 
-int main(){
-
+int main(int argc, char* argv[]){
+switch (argc){
+case 1:
+{
 int position = 0;
 bool stringFound = false;
 string temp, searchFromString, searchableString, readFile;
@@ -18,19 +20,6 @@ getline(cin, searchableString);
 
 stringstream s(searchFromString);
 
-//ifstream readFile("mygrep.txt");
-
-//if(!readFile){
-   // cout << "Can't open input file";
-   // return 0;
-//}
-
-//while (getline(readFile, searchString)){
-
-//}
-
-//readFile.close();
-
 size_t substringPosition = searchFromString.find(searchableString);
 
 if(substringPosition != string::npos) {
@@ -39,8 +28,41 @@ stringFound = true;
   } else {
     cout << "\"" << searchableString << "\" NOT found in \"" << searchFromString << "\"";
 }
-cout << endl;
+
 system("pause");
-    return 0;
+  break;
 }
+case 3:
+{
+ifstream readFile(argv[2]);
+  string searchFileString = argv[1], searchableFile;
+  bool txtFound = false;
+
+if(!readFile){
+    cout << "Can't open input file";
+    return 0;
+
+}else {
+
+while (getline(readFile, searchableFile)){
+  if (searchableFile.find(searchFileString) != string::npos){
+    cout << searchableFile << endl;
+    txtFound = true;    
+  }
+}
+if (!txtFound){
+  cout << searchFileString << " not found in " << argv[2] << endl;
+  }
+      }
+      readFile.close();
+      return 0;
+    }
+  }
+}
+
+
+
+ 
+
+
 
