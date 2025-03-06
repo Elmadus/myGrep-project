@@ -4,12 +4,14 @@
 
 using namespace std;
 
+// Function to open the file if the user input requires it to
 void fileOpening(const string &fileName, ifstream &readFile, bool &fileIsOpen)
 {
   readFile.open(fileName);
   fileIsOpen = readFile.is_open();
 }
 
+// Function for looking/searching the user inputted word/characters
 void searchingFromFile(const string &addedCommand, int &lineNumbering, ifstream &readFile, string &searchFileString, string &searchableFile, bool &stringNotFoundAlert, int &argc, int &occurrences)
 {
   if (argc == 3)
@@ -79,6 +81,7 @@ void searchingFromFile(const string &addedCommand, int &lineNumbering, ifstream 
   }
 }
 
+// Main program, which uses a switch to decide how the program is executed
 int main(int argc, char *argv[])
 {
 
