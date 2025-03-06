@@ -1,68 +1,173 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-#include <sstream>
 
 using namespace std;
 
-int main(int argc, char* argv[]){
-switch (argc){
-case 1:
+void fileOpening(const string &fileName, ifstream &readFile, bool &fileIsOpen)
 {
-int position = 0;
-bool stringFound = false;
-string temp, searchFromString, searchableString, readFile;
-
-cout << "Give a string from which to search for: ";
-getline(cin, searchFromString);
-cout << "Give a search string: ";
-getline(cin, searchableString);
-
-stringstream s(searchFromString);
-
-size_t substringPosition = searchFromString.find(searchableString);
-
-if(substringPosition != string::npos) {
-     cout << "\"" << searchableString << "\" found in \"" << searchFromString << "\" in position " << substringPosition << endl;
-stringFound = true;
-  } else {
-    cout << "\"" << searchableString << "\" NOT found in \"" << searchFromString << "\"";
+  readFile.open(fileName);
+  fileIsOpen = readFile.is_open();
 }
 
-system("pause");
-  break;
-}
-case 3:
+void searchingFromFile(const string &addedCommand, int &lineNumbering, ifstream &readFile, string &searchFileString, string &searchableFile, bool &stringNotFoundAlert, int &argc, int &occurrences)
 {
-ifstream readFile(argv[2]);
-  string searchFileString = argv[1], searchableFile;
-  bool txtFound = false;
-
-if(!readFile){
-    cout << "Can't open input file";
-    return 0;
-
-}else {
-
-while (getline(readFile, searchableFile)){
-  if (searchableFile.find(searchFileString) != string::npos){
-    cout << searchableFile << endl;
-    txtFound = true;    
-  }
-}
-if (!txtFound){
-  cout << searchFileString << " not found in " << argv[2] << endl;
-  }
+  if (argc == 3)
+  {
+    while (getline(readFile, searchableFile))
+    {
+      if (searchableFile.find(searchFileString) != string::npos)
+      {
+        cout << searchableFile << endl;
+        stringNotFoundAlert = false;
       }
-      readFile.close();
-      return 0;
+    }
+  }
+  if (argc == 4)
+  {
+    if (addedCommand == "-ol")
+    {
+      while (getline(readFile, searchableFile))
+      {
+        lineNumbering++;
+        if (searchableFile.find(searchFileString) != string::npos)
+        {
+          cout << lineNumbering << ":   " << searchableFile << endl;
+          stringNotFoundAlert = false;
+        }
+      }
+    }
+    else if (addedCommand == "-oo")
+    {
+      while (getline(readFile, searchableFile))
+      {
+        if (searchableFile.find(searchFileString) != string::npos)
+        {
+          cout << searchableFile << endl;
+          stringNotFoundAlert = false;
+          occurrences++;
+        }
+      }
+      cout << endl;
+      cout << "Occurrences of lines containing \"" << searchFileString << "\": " << occurrences << endl;
+    }
+    else if (addedCommand == "-olo")
+    {
+      while (getline(readFile, searchableFile))
+      {
+        lineNumbering++;
+        if (searchableFile.find(searchFileString) != string::npos)
+        {
+          cout << lineNumbering << ":   " << searchableFile << endl;
+          stringNotFoundAlert = false;
+          occurrences++;
+        }
+      }
+      cout << endl;
+      cout << "Occurrences of lines containing \"" << searchFileString << "\": " << occurrences << endl;
+    }
+    else if (addedCommand == "-o")
+    {
+      cout << "Please input the wanted command after \"-o\"" << endl;
+      stringNotFoundAlert = false;
+    }
+    else
+    {
+      cout << "Input is missing an added command, or the input was invalid" << endl;
+      stringNotFoundAlert = false;
     }
   }
 }
 
+int main(int argc, char *argv[])
+{
 
+  ifstream readFile;
+  bool fileIsOpen = false, stringNotFoundAlert = true;
+  int lineNumbering = 1, occurrences = 0;
+  string searchFileString, searchableFile, fileName, addedCommand;
 
- 
+  switch (argc)
+  {
+  case 1:
+  {
+    int position = 0;
+    bool stringFound = false;
+    string temp, searchFromString, searchableString;
 
+    cout << "Give a string from which to search for: ";
+    getline(cin, searchFromString);
+    cout << "Give a search string: ";
+    getline(cin, searchableString);
 
+    size_t substringPosition = searchFromString.find(searchableString);
 
+    if (substringPosition != string::npos)
+    {
+      cout << "\"" << searchableString << "\" found in \"" << searchFromString << "\" in position " << substringPosition << endl;
+      stringFound = true;
+    }
+    else
+    {
+      cout << "\"" << searchableString << "\" NOT found in \"" << searchFromString << "\"" << endl;
+    }
+    break;
+  }
+  case 3:
+  {
+
+    fileName = argv[2];
+
+    fileOpening(fileName, readFile, fileIsOpen);
+
+    searchFileString = argv[1];
+
+    if (!fileIsOpen)
+    {
+      cout << "Can't open input file: \"" << argv[2] << "\"" << endl;
+      return 1;
+    }
+    else
+    {
+      searchingFromFile(argv[1], lineNumbering, readFile, searchFileString, searchableFile, stringNotFoundAlert, argc, occurrences);
+
+      if (stringNotFoundAlert)
+      {
+        cout << "\"" << searchFileString << "\" not found in \"" << argv[2] << "\"" << endl;
+      }
+    }
+    break;
+  }
+  case 4:
+  {
+    fileName = argv[3];
+
+    fileOpening(fileName, readFile, fileIsOpen);
+
+    searchFileString = argv[2];
+    addedCommand = argv[1];
+
+    if (!fileIsOpen)
+    {
+      cout << "Can't open input file: \"" << argv[3] << "\"" << endl;
+      return 1;
+    }
+    else
+    {
+      searchingFromFile(argv[1], lineNumbering, readFile, searchFileString, searchableFile, stringNotFoundAlert, argc, occurrences);
+
+      if (stringNotFoundAlert)
+      {
+        cout << "\"" << searchFileString << "\" not found in \"" << argv[3] << "\"" << endl;
+      }
+    }
+    break;
+  }
+  default:
+  {
+    cout << "Input had an invalid amount of arguments, please try again" << endl;
+  }
+  }
+  readFile.close();
+  return 0;
+}
